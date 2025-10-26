@@ -1,0 +1,43 @@
+name: Uptime
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/5 * * * *"  # every 5 minutes
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Check health (no header)
+        id: plain
+        run: |
+          URL="${{ env.HEALTH_URL }}"
+          code=$(curl -sS -o /dev/null -w "%{http_code}" "$URL" || true)
+          echo "code=$code" >> $GITHUB_OUTPUT
+          echo "Plain status: $code"
+      - name: Check health (with bypass header if secret set)
+        id: bypass
+        env:
+          BYPASS: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          URL="${{ env.HEALTH_URL }}"
+          if [ -n "${BYPASS:-}" ]; then
+            code=$(curl -sS -H "x-vercel-protection-bypass: $BYPASS" -o /dev/null -w "%{http_code}" "$URL" || true)
+            echo "code=$code" >> $GITHUB_OUTPUT
+            echo "Bypass status: $code"
+          else
+            echo "code=000" >> $GITHUB_OUTPUT
+            echo "Bypass secret not set; skipping."
+          fi
+      - name: Decide pass/fail
+        run: |
+          plain="${{ steps.plain.outputs.code }}"
+          bypass="${{ steps.bypass.outputs.code }}"
+          echo "Plain=$plain  Bypass=$bypass"
+          if [ "$plain" != "200" ] && [ "$bypass" != "200" ]; then
+            echo "❌ Health check failed"
+            exit 1
+          fi
+          echo "✅ Health OK"
