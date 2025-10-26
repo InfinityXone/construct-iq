@@ -15,3 +15,12 @@ __pycache__/
 .DS_Store
 .vercel
 .env*.local
+
+# infra/dev
+.env
+.vercel/
+pgdata/
+__pycache__/
+*.pyc
+.mypy_cache/
+.pytest_cache/
