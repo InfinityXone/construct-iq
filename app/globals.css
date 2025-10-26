@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+html, body { height: 100%; }
+body { @apply bg-bg text-fg antialiased; }
+.container { @apply mx-auto max-w-6xl px-6; }
+.section { @apply py-16 md:py-24; }
+.card { @apply rounded-2xl bg-[#0f0f0f] border border-line p-6 hover:border-brand/40 transition-colors; }
+.kbd { @apply inline-flex items-center rounded-md border border-line bg-[#111] px-2 py-1 text-xs text-mute; }
+.link { @apply text-fg/90 hover:text-brand transition-colors; }
+.btn { @apply inline-flex items-center justify-center rounded-full px-5 py-2.5 bg-fg text-bg text-sm font-medium transition-transform hover:-translate-y-0.5 active:translate-y-0 border border-fg/10; }
+.btn-outline { @apply inline-flex items-center justify-center rounded-full px-5 py-2.5 border border-line text-fg hover:border-brand/50 hover:text-brand transition-colors; }
+.badge { @apply inline-flex items-center gap-2 rounded-full border border-line px-3 py-1 text-xs text-mute; }
+.hero-grid { display:grid; grid-template-columns:1.1fr 0.9fr; gap:2rem; }
+@media (max-width: 900px) { .hero-grid { grid-template-columns:1fr; } }

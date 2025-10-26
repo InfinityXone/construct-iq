@@ -1,0 +1,15 @@
+node_modules/
+pnpm-lock.yaml
+package-lock.json
+.next/
+dist/
+coverage/
+.env
+.env.*
+!.env.example
+apps/**/.env*
+services/**/.env*
+__pycache__/
+.venv/
+*.py[cod]
+.DS_Store
