@@ -1,0 +1,5 @@
+Risk,Category,Likelihood,Impact,Mitigation,Owner
+Portal ToS changes,Legal,M,H,Prefer APIs/FOIA; rotate adapters,PM
+Ingest freshness lag,Ops,M,M,Watermarks+alerts; backfill job,Eng
+PDF extraction errors,Product,M,M,Human review; templates,Estimating
+Tenant isolation bug,Security,L,H,RLS + tests; phase rollout,EngSec
