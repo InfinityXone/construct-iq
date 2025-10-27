@@ -1,0 +1,186 @@
+# ===== Construct IQ — Cloud Run worker Makefile =====
+# Usage:
+#   make build          # build/push image
+#   make deploy         # deploy Cloud Run w/ Cloud SQL connector
+#   make pubsub         # create topic+push subscription, grant roles
+#   make proxy          # run Cloud SQL proxy locally (background)
+#   make schema         # apply repo SQL files via proxy
+#   make smoke          # publish a test job to Pub/Sub
+#   make all            # build + deploy + pubsub
+#   make status         # show service + instance status
+#   make logs           # tail Cloud Run request logs
+#   make patch-docker   # ensure gunicorn points at Flask app
+#   make bootstrap      # create minimal worker files if missing
+
+# -------- settings --------
+PROJECT_ID ?= $(shell gcloud config get-value project)
+REGION     ?= us-east1
+INSTANCE   ?= ciq-postgres
+DB_NAME    ?= ciq
+DB_USER    ?= ciq
+DB_PASS    ?= ciqpass
+SERVICE    ?= harvester
+IMAGE      ?= gcr.io/$(PROJECT_ID)/harvester
+
+CONN_NAME  := $(shell gcloud sql instances describe $(INSTANCE) --format='value(connectionName)' 2>/dev/null || true)
+
+SQL_GLOB   ?= infra/postgres-init/000*.sql
+
+# -------- helpers --------
+.PHONY: all build deploy pubsub proxy schema smoke logs status patch-docker bootstrap
+
+all: build deploy pubsub
+
+status:
+	@echo "Project:   $(PROJECT_ID)"
+	@echo "Region:    $(REGION)"
+	@echo "Instance:  $(INSTANCE)"
+	@echo "ConnName:  $(CONN_NAME)"
+	@echo "Service:   $(SERVICE)"
+	@echo "Image:     $(IMAGE)"
+	@echo "SQL files: $(SQL_GLOB)"
+	@echo "Service URL:"
+	@gcloud run services describe $(SERVICE) --region $(REGION) --format='value(status.url)' || true
+	@echo "Instance state:"
+	@gcloud sql instances describe $(INSTANCE) --format='value(state)' || true
+
+bootstrap:
+	@mkdir -p cloudrun/worker
+	@if [ ! -f cloudrun/worker/app.py ]; then \
+	  echo ">> writing cloudrun/worker/app.py"; \
+	  cat > cloudrun/worker/app.py <<'PY'; \
+import os, base64, json, logging
+from flask import Flask, request, jsonify
+import psycopg
+# NOTE: adjust these imports to your actual harvester module names
+from api.harvest.gsa_calc_rates import fetch_page, parse_records, upsert_records
+
+app = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger("worker")
+
+DB_NAME = os.getenv("DB_NAME","ciq")
+DB_USER = os.getenv("DB_USER","ciq")
+DB_PASS = os.getenv("DB_PASS","ciqpass")
+INSTANCE_CONN_NAME = os.environ.get("INSTANCE_CONN_NAME","")
+DB_DSN = f"dbname={DB_NAME} user={DB_USER} password={DB_PASS} host=/cloudsql/{INSTANCE_CONN_NAME}"
+
+def run_job(job: dict):
+    name = job.get("name")
+    region = job.get("region","US-ceiling")
+    basis = job.get("basis","labor")
+    with psycopg.connect(DB_DSN) as conn:
+        page, empty = 1, 0
+        while True:
+            payload = fetch_page(page, name=name)
+            recs = parse_records(payload)
+            if not recs:
+                empty += 1
+                if empty >= 2: break
+                page += 1; continue
+            for r in recs:
+                r["basis"] = r.get("basis") or basis
+                r["region"] = r.get("region") or region
+            upsert_records(conn, recs)
+            page += 1
+
+@app.post("/")
+def receive():
+    env = request.get_json(silent=True) or {}
+    msg = env.get("message", {})
+    data_b64 = msg.get("data")
+    if not data_b64: return jsonify({"status":"no-data"}), 200
+    try:
+        job = json.loads(base64.b64decode(data_b64).decode("utf-8"))
+        log.info("job: %s", job)
+        run_job(job)
+        return jsonify({"status":"ok"}), 200
+    except Exception as e:
+        log.exception("job failed: %s", e)
+        return jsonify({"status":"error","msg":str(e)}), 200
+
+@app.get("/healthz")
+def health(): return "ok", 200
+PY \
+	; fi
+	@if [ ! -f cloudrun/worker/requirements.txt ]; then \
+	  echo ">> writing cloudrun/worker/requirements.txt"; \
+	  echo "Flask==3.*" > cloudrun/worker/requirements.txt; \
+	  echo "gunicorn==21.*" >> cloudrun/worker/requirements.txt; \
+	  echo "psycopg[binary]==3.*" >> cloudrun/worker/requirements.txt; \
+	fi
+	@if [ ! -f Dockerfile.worker ]; then \
+	  echo ">> writing Dockerfile.worker"; \
+	  cat > Dockerfile.worker <<'DOCKER'; \
+FROM python:3.11-slim
+WORKDIR /app
+COPY cloudrun/worker/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+ENV PORT=8080
+CMD ["gunicorn","-b","0.0.0.0:8080","cloudrun.worker.app:app","--workers","1","--threads","8"]
+DOCKER \
+	; fi
+	@echo ">> bootstrap complete"
+
+patch-docker:
+	@# ensure gunicorn targets Flask app object
+	@if ! grep -q 'cloudrun.worker.app:app' Dockerfile.worker; then \
+	  echo ">> patching Dockerfile.worker entrypoint"; \
+	  sed -i "s#cloudrun.worker.app:.*#cloudrun.worker.app:app\",\"--workers\",\"1\",\"--threads\",\"8\"]#g" Dockerfile.worker; \
+	fi
+
+build: patch-docker
+	@echo ">> building image: $(IMAGE)"
+	@cp -f Dockerfile.worker Dockerfile
+	gcloud builds submit --tag $(IMAGE) .
+
+deploy:
+	@test -n "$(CONN_NAME)" || (echo "No Cloud SQL connection name found for $(INSTANCE)"; exit 1)
+	gcloud run deploy $(SERVICE) \
+	  --image $(IMAGE) \
+	  --region $(REGION) \
+	  --add-cloudsql-instances "$(CONN_NAME)" \
+	  --set-env-vars INSTANCE_CONN_NAME="$(CONN_NAME)",DB_NAME=$(DB_NAME),DB_USER=$(DB_USER),DB_PASS=$(DB_PASS) \
+	  --no-allow-unauthenticated
+
+pubsub:
+	@echo ">> wiring Pub/Sub push"
+	@TOPIC=harvest-names; SUB=harvest-push; \
+	URL=$$(gcloud run services describe $(SERVICE) --region $(REGION) --format='value(status.url)'); \
+	SA=$$(gcloud run services describe $(SERVICE) --region $(REGION) --format='value(spec.template.spec.serviceAccountName)'); \
+	gcloud pubsub topics create $$TOPIC || true; \
+	gcloud projects add-iam-policy-binding $(PROJECT_ID) --member="serviceAccount:$$SA" --role="roles/pubsub.subscriber" >/dev/null; \
+	gcloud projects add-iam-policy-binding $(PROJECT_ID) --member="serviceAccount:$$SA" --role="roles/cloudsql.client" >/dev/null; \
+	gcloud pubsub subscriptions create $$SUB --topic $$TOPIC \
+	  --push-endpoint "$$URL/" --push-auth-service-account "$$SA" --ack-deadline 30 || true; \
+	echo "Topic: $$TOPIC  Sub: $$SUB  URL: $$URL  SA: $$SA"
+
+proxy:
+	@test -n "$(CONN_NAME)" || (echo "No Cloud SQL connection name found for $(INSTANCE)"; exit 1)
+	@if ! command -v ./cloud-sql-proxy >/dev/null 2>&1; then \
+	  echo ">> downloading Cloud SQL proxy"; \
+	  curl -fsSL -o cloud-sql-proxy https://dl.google.com/cloudsql/cloud-sql-proxy.linux.amd64 && chmod +x cloud-sql-proxy; \
+	fi
+	@nohup ./cloud-sql-proxy "$(CONN_NAME)" > /tmp/sql-proxy.log 2>&1 & \
+	 && disown || true
+	@ps aux | grep cloud-sql-proxy | grep -v grep || (echo "proxy not running; see /tmp/sql-proxy.log"; exit 1)
+	@echo "proxy running"
+
+schema:
+	@echo ">> applying schema files: $(SQL_GLOB)"
+	@for f in $(SQL_GLOB); do \
+	  echo "== applying $$f"; \
+	  psql "host=127.0.0.1 port=5432 dbname=$(DB_NAME) user=$(DB_USER) password=$(DB_PASS)" -v ON_ERROR_STOP=1 -f "$$f"; \
+	done
+	@echo ">> tables:"
+	@psql "host=127.0.0.1 port=5432 dbname=$(DB_NAME) user=$(DB_USER) password=$(DB_PASS)" -c "\dt+"
+
+smoke:
+	@echo ">> publishing test job"
+	gcloud pubsub topics publish harvest-names --message '{"name":"Flagger","region":"US-ceiling","basis":"labor"}'
+	@echo ">> tail logs in another terminal:"
+	@echo "gcloud logs tail --region $(REGION) 'run.googleapis.com%2Frequests' --service=$(SERVICE)"
+
+logs:
+	gcloud logs tail --region $(REGION) "run.googleapis.com%2Frequests" --service=$(SERVICE)

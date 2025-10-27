@@ -29,3 +29,5 @@ values
 ('demo','FED-001','Small bridge rehab – District 3','Superstructure + deck overlay','prebid',array['structure','site'], now() + interval '21 days', 2500000, '{"state":"CA","city":"Sacramento"}', 72),
 ('demo','CITY-042','Library HVAC replacement','RTUs + controls','bid',array['mep'], now() + interval '10 days', 900000, '{"state":"WA","city":"Tacoma"}', 64)
 on conflict do nothing;
+create extension if not exists pg_trgm;
+create extension if not exists pgcrypto;

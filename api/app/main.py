@@ -1,3 +1,5 @@
+from api.app.routes import rates as rates_router
+from .routes import rates
 from fastapi import FastAPI, Query
 from os import getenv
 from datetime import datetime
@@ -30,3 +32,4 @@ def list_opps(limit: int = Query(25, ge=1, le=100), q: str | None = None):
     with connect() as conn:
         rows = conn.execute(sql, args).fetchall()
         return {"items": rows, "count": len(rows)}
+app.include_router(rates.router, prefix="/api")

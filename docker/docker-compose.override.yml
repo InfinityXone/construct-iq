@@ -1,0 +1,3 @@
+services:
+  harvester:
+    command: ["bash", "/app/harvest/run_calc_loop.sh"]

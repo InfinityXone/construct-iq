@@ -1,87 +1,110 @@
-version: "3.9"
 services:
   db:
     image: postgres:15
+    restart: unless-stopped
+    env_file: ../.env
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ../infra/postgres-init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
-      timeout: 5s
-      retries: 20
-    ports: ["5432:5432"]
-
-  redis:
-    image: redis:7-alpine
-    command: ["redis-server","--save","","--appendonly","no"]
-    healthcheck:
-      test: ["CMD","redis-cli","ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-    ports: ["6379:6379"]
-
-  minio:
-    image: quay.io/minio/minio:RELEASE.2024-11-07T22-05-06Z
-    command: server /data --console-address ":9001"
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-    volumes: [minio:/data]
-    ports: ["9000:9000","9001:9001"]
-    healthcheck:
-      test: ["CMD","curl","-f","http://localhost:9000/minio/health/live"]
-      interval: 5s
-      timeout: 5s
+      timeout: 3s
       retries: 30
 
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    env_file: ../.env
+    command: ["server", "/data", "--console-address", ":9001"]
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/ready"]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+
   minio-setup:
-    image: quay.io/minio/mc:RELEASE.2024-10-02T09-41-43Z
+    image: minio/mc:latest
+    restart: on-failure
+    env_file: ../.env
     depends_on:
-      minio: { condition: service_healthy }
-    entrypoint: ["/bin/sh","-c"]
-    command: >
-      "mc alias set local http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
-       (mc ls local/${MINIO_BUCKET} >/dev/null 2>&1 || mc mb local/${MINIO_BUCKET}) &&
-       echo MinIO ready"
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-      MINIO_BUCKET: ${MINIO_BUCKET}
+      minio:
+        condition: service_healthy
+    command:
+      - sh
+      - -lc
+      - >
+        mc alias set local http://minio:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"
+        && mc mb --ignore-existing "local/$MINIO_BUCKET"
+        && echo "Bucket '$MINIO_BUCKET' ready"
 
   api:
     image: python:3.11-slim
-    working_dir: /app
-    volumes: ["../api:/app"]
-    command: bash -lc "pip install -r requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8080"
+    restart: unless-stopped
     env_file: ../.env
+    working_dir: /app
+    volumes:
+      - ../api:/app
+    command: bash -lc "pip install -q -r /app/requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8080"
     depends_on:
-      db: { condition: service_healthy }
-      redis: { condition: service_healthy }
-      minio-setup: { condition: service_completed_successfully }
-    ports: ["8080:8080"]
-    healthcheck:
-      test: ["CMD-SHELL","curl -fsS http://localhost:8080/api/health || exit 1"]
-      interval: 5s
-      timeout: 5s
-      retries: 30
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio-setup:
+        condition: service_started
+    ports:
+      - "8080:8080"
 
   worker:
     image: python:3.11-slim
+    restart: unless-stopped
+    env_file: ../.env
     working_dir: /app
     volumes:
-      - "../worker:/app"
-      - "../api:/deps_api:ro"
-    command: bash -lc "pip install -r /deps_api/requirements.txt && python worker.py"
-    env_file: ../.env
+      - ../api:/app
+      - ../worker:/worker
+    command: bash -lc "pip install -q -r /app/requirements.txt && python -u /worker/worker.py"
     depends_on:
-      db: { condition: service_healthy }
-      redis: { condition: service_healthy }
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  harvester:
+    image: python:3.11-slim
+    restart: unless-stopped
+    env_file: ../.env
+    working_dir: /app
+    volumes:
+      - ../api:/app
+    # command overridden by docker-compose.override.yml
+    command: bash -lc "pip install -q -r /app/requirements.txt && python -u /app/harvest/gsa_calc_rates.py --pages ${CALC_PAGES:-5}"
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   pgdata:

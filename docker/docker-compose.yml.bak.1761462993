@@ -1,0 +1,94 @@
+services:
+  harvester:
+    image: python:3.11-slim
+    working_dir: /app
+    env_file: ../.env
+    volumes:
+      - ../api:/app:rw
+    depends_on:
+      - db
+    command: ["bash", "/app/harvest/run_calc_loop.sh"]
+      pip install -q -r /app/requirements.txt && \
+      python -u /app/harvest/gsa_calc_rates.py --pages ${CALC_PAGES:-5} && \
+      while true; do sleep ${CALC_INTERVAL_SECS:-21600}; python -u /app/harvest/gsa_calc_rates.py --pages ${CALC_PAGES:-5}; done
+      '
+
+  db:
+    image: postgres:15
+    env_file: ../.env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../infra/postgres-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    ports: ["5432:5432"]
+
+  redis:
+    image: redis:7-alpine
+    env_file: ../.env
+    command: ["redis-server","--save","","--appendonly","no"]
+    healthcheck:
+      test: ["CMD","redis-cli","ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    ports: ["6379:6379"]
+
+  minio:
+    image: minio/minio:latest
+    env_file: ../.env
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio:/data
+    ports: ["9000:9000","9001:9001"]
+    healthcheck:
+      test: ["CMD","curl","-f","http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+
+  minio-setup:
+    image: minio/mc:latest
+    depends_on:
+      minio: { condition: service_healthy }
+    env_file: ../.env
+    volumes:
+      - ../docker/init/minio-init.sh:/init/minio-init.sh:ro
+    entrypoint: ["/bin/sh","-lc","/init/minio-init.sh"]
+    restart: on-failure
+
+  api:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes: ["../api:/app"]
+    command: bash -lc "pip install -r requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8080"
+    env_file: ../.env
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      minio-setup: { condition: service_completed_successfully }
+    ports: ["8080:8080"]
+    healthcheck:
+      test: ["CMD-SHELL","curl -fsS http://localhost:8080/api/health || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+
+  worker:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - "../worker:/app"
+      - "../api:/deps_api:ro"
+    command: bash -lc "pip install -r /deps_api/requirements.txt && python worker.py"
+    env_file: ../.env
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+volumes:
+  pgdata:
+  minio:
