@@ -1,0 +1,14 @@
+🧠 [Thu Oct 23 02:06:22 AM UTC 2025] Starting Infinity-X One system sanity check...
+🌐 Checking endpoints...
+🔗 Testing Local Agent → http://localhost:8080
+curl/health
+⚠️  Local Agent not reachable.
+🔗 Testing Memory Gateway → https://memory-gateway-ru6asaa7vq-ue.a.run.app/health
+✅ Memory Gateway reachable.
+🔗 Testing Cloud Agent → https://infinity-agent-938446344277.us-east1.run.app/health
+✅ Cloud Agent reachable.
+🧩 Checking local systemd units...
+✅ memory-autonomy-cycle.service active
+✅ memory-autonomy-cycle.timer active
+🧬 Verifying integrity hash...
+✅ State file checksum matches manifest.

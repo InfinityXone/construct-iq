@@ -1,0 +1,16 @@
+name: Infinity-X GPT Agent
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run GPT-based repo agent
+        run: |
+          chmod +x scripts/repo_agent.sh
+          ./scripts/repo_agent.sh

@@ -1,0 +1,24 @@
+name: Infinity-X Auto-Heal
+
+on:
+  workflow_run:
+    workflows: ["Infinity-X Auto-Ops"]
+    types:
+      - completed
+
+jobs:
+  heal:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Heal repository
+        run: |
+          echo "🧠 Detected workflow failure. Initiating repo agent..."
+          chmod +x scripts/repo_agent.sh
+          ./scripts/repo_agent.sh || echo "⚠️ Repo agent failed gracefully."
+      - name: Commit healed changes
+        run: |
+          git add .
+          git commit -m "🩺 Auto-heal fix at $(date)"
+          git push origin main || true
