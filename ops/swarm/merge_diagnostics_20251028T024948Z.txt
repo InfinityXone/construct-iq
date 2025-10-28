@@ -1,0 +1,118 @@
+====================================================================================================
+CONSTRUCT-IQ ⟂ SWARM MERGE DIAGNOSTICS — 20251028T024948Z (branch: merge/swarm-20251028T023033Z)
+====================================================================================================
+[i] Repo root: /home/infinity-x-one/construct-iq
+[i] Remote: https://github.com/InfinityXone/construct-iq.git
+[i] Git status (short):
+   M ops/swarm/merge_diagnostics_20251028T024946Z.txt
+  ?? ops/swarm/merge_diagnostics_20251028T024948Z.txt
+====================================================================================================
+DIRECTORY & NAMING CHECKS
+====================================================================================================
+[✓] services
+[✓] services/memory-gateway
+[✓] services/orchestrator
+[✓] services/agents
+[✓] apps/swarm-dashboard
+[✓] ops/swarm
+[✓] infra/swarm
+[✓] docs/swarm
+[✓] .github/workflows
+
+[i] Detected agents (services/agents/*):
+  - agents
+  - agents/codex-agent
+  - agents/creator-agent
+  - agents/dashboard
+  - agents/financial-agent
+  - agents/guardian
+  - agents/headless-api
+  - agents/infinity-agent
+  - agents/memory-gateway
+  - agents/orchestrator
+  - agents/strategist-agent
+  - agents/visionary-agent
+  - financial-agent
+  - financial-agent/__pycache__
+  - langchain-runtime
+  - langchain-runtime/__pycache__
+  - strategist-agent
+  - strategist-agent/__pycache__
+  - visionary-agent
+  - visionary-agent/__pycache__
+====================================================================================================
+HYGIENE CHECKS (staging, big files, temp/log files)
+====================================================================================================
+[✓] no swarm-staging/
+
+[i] Large files ≥ 25MB in repo (may bloat CI):
+  (none ≥25MB)
+[! ] repo log present: services/memory-gateway/MEMORY_AUTONOMY_CYCLE_LOG.txt
+[! ] repo log present: services/memory-gateway/REPO_SYNC_LOG.txt
+[! ] repo log present: services/memory-gateway/SELF_HEAL_LOG.txt
+[! ] repo log present: services/memory-gateway/STATE_INTEGRITY_LOG.txt
+[! ] repo log present: services/memory-gateway/STATE_RECALL_LOG.txt
+[! ] repo log present: services/memory-gateway/STATE_SYNC_LOG.txt
+[! ] repo log present: services/memory-gateway/SYSTEM_SANITY_LOG.txt
+====================================================================================================
+SERVICE READINESS (Dockerfile + main.py + py-compile)
+====================================================================================================
+[✓] services/memory-gateway : main.py=yes Dockerfile=yes
+    -> py_compile OK
+[✓] services/orchestrator : main.py=yes Dockerfile=yes
+    -> py_compile OK
+[✓] services/agents/agents : main.py=no Dockerfile=no
+[✓] services/agents/agents/codex-agent : main.py=yes Dockerfile=yes
+    -> py_compile OK
+[✓] services/agents/agents/creator-agent : main.py=yes Dockerfile=yes
+    -> py_compile OK
+[✓] services/agents/agents/dashboard : main.py=yes Dockerfile=yes
+    -> py_compile OK
+[✓] services/agents/agents/financial-agent : main.py=yes Dockerfile=yes
+    -> py_compile OK
+[✓] services/agents/agents/guardian : main.py=yes Dockerfile=yes
+    -> py_compile OK
+[✓] services/agents/agents/headless-api : main.py=yes Dockerfile=yes
+    -> py_compile OK
+[✓] services/agents/agents/infinity-agent : main.py=yes Dockerfile=yes
+    -> py_compile OK
+[✓] services/agents/agents/memory-gateway : main.py=yes Dockerfile=yes
+    -> py_compile OK
+[✓] services/agents/agents/orchestrator : main.py=yes Dockerfile=yes
+    -> py_compile OK
+[✓] services/agents/agents/strategist-agent : main.py=yes Dockerfile=yes
+    -> py_compile OK
+[✓] services/agents/agents/visionary-agent : main.py=yes Dockerfile=yes
+    -> py_compile OK
+[✓] services/agents/financial-agent : main.py=yes Dockerfile=yes
+    -> py_compile OK
+[✓] services/agents/financial-agent/__pycache__ : main.py=no Dockerfile=no
+[✓] services/agents/langchain-runtime : main.py=yes Dockerfile=yes
+    -> py_compile OK
+[✓] services/agents/langchain-runtime/__pycache__ : main.py=no Dockerfile=no
+[✓] services/agents/strategist-agent : main.py=yes Dockerfile=yes
+    -> py_compile OK
+[✓] services/agents/strategist-agent/__pycache__ : main.py=no Dockerfile=no
+[✓] services/agents/visionary-agent : main.py=yes Dockerfile=yes
+    -> py_compile OK
+[✓] services/agents/visionary-agent/__pycache__ : main.py=no Dockerfile=no
+====================================================================================================
+CI WORKFLOWS (.github/workflows)
+====================================================================================================
+[! ] workflow not namespaced: ci.yml
+    -> set to workflow_dispatch
+[! ] workflow not namespaced: launch-stack.yml
+    -> set to workflow_dispatch
+[✓] swarm-deploy.yml
+    -> set to workflow_dispatch
+[! ] workflow not namespaced: uptime.yml
+    -> set to workflow_dispatch
+====================================================================================================
+DOCUMENTATION CHECKS
+====================================================================================================
+[✓] services/memory-gateway : README.md present
+[✓] services/orchestrator : README.md present
+[✓] apps/swarm-dashboard : README.md present
+[✓] ops/swarm : README.md present
+[✓] infra/swarm : README.md present
+[✓] docs/swarm : README.md present
