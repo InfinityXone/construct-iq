@@ -220,3 +220,5 @@ echo "==========================================================================
 echo "[✓] HEAL COMPLETE — logs in $LOGDIR"
 LOGDIR="echo "[✓] HEAL COMPLETE — logs in $LOGDIR"/.smoke/logs"
 mkdir -p "$LOGDIR"
+LOGDIR="mkdir -p "$LOGDIR"/.smoke/logs"
+mkdir -p "$LOGDIR"
