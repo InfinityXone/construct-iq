@@ -27,3 +27,6 @@ __pycache__/
 
 # memory-gateway runtime logs
 services/memory-gateway/*LOG.txt
+
+# memory-gateway runtime logs
+services/memory-gateway/*LOG.txt

@@ -1,0 +1,15 @@
+====================================================================================================
+CONSTRUCT-IQ :: MERGE FIX + SMOKE — 20251028T030729Z
+[i] repo: /home/infinity-x-one/construct-iq
+[i] branch: merge/swarm-20251028T023033Z
+[i] flags: FIX=1 PUSH=0
+====================================================================================================
+[!] _from_github is recorded as submodule/gitlink
+[✓] removed gitlink entry (directory will be normal files next commit)
+[✓] updated .gitignore for memory-gateway logs
+====================================================================================================
+SERVICE PREP
+[*] memory-gateway  (kind=fastapi)
+    [✓] py-compile OK
+[*] orchestrator  (kind=flask)
+    [✓] py-compile OK

@@ -1,0 +1,68 @@
+====================================================================================================
+CONSTRUCT-IQ ⟂ SWARM — SUPER CHECK — 20251028T025833Z
+====================================================================================================
+[i] repo: /home/infinity-x-one/construct-iq
+[i] branch: merge/swarm-20251028T023033Z
+[i] flags: FIX=0 PURGE_STAGING=0 SET_WF_MANUAL=0 PUSH=0
+   M ops/swarm/merge_diagnostics_20251028T024948Z.txt
+  ?? .smoke/
+  ?? ciq_local_smoke_v1.sh
+  ?? ciq_merge_final_heal.sh
+  ?? ciq_merge_supercheck_v3.sh
+  ?? ops/swarm/local_smoke_20251028T025421Z.txt
+  ?? ops/swarm/local_smoke_20251028T025539Z.txt
+  ?? ops/swarm/merge_supercheck_20251028T025833Z.txt
+
+====================================================================================================
+DIRECTORY & NAMING CHECKS
+[✓] services
+[✓] services/memory-gateway
+[✓] services/orchestrator
+[✓] services/agents
+[✓] apps/swarm-dashboard
+[✓] ops/swarm
+[✓] infra/swarm
+[✓] docs/swarm
+[✓] .github/workflows
+
+====================================================================================================
+HYGIENE (logs, staging, gitlinks)
+[✓] no tracked memory-gateway log files
+[✓] no swarm-staging/
+[!] _from_github recorded as submodule/gitlink
+
+====================================================================================================
+SERVICE READINESS (main.py + Dockerfile + py-compile)
+[*] memory-gateway
+    [!] py-compile FAILED
+[*] orchestrator
+    [!] py-compile FAILED
+
+====================================================================================================
+CI WORKFLOWS
+  [i] ci.yml
+  [i] launch-stack.yml
+  [i] swarm-deploy.yml
+  [i] uptime.yml
+
+====================================================================================================
+DOCS
+  [✓] ops/swarm/README.md present
+  [✓] infra/swarm/README.md present
+  [✓] docs/swarm/README.md present
+
+====================================================================================================
+LOCAL SMOKE TEST
+
+[*] memory-gateway
+    -> FAIL: http://127.0.0.1:57301 — showing recent logs:
+
+[*] orchestrator
+    -> FAIL: http://127.0.0.1:40827 — showing recent logs:
+         Traceback (most recent call last):
+           File "/home/infinity-x-one/construct-iq/services/orchestrator/main.py", line 7, in <module>
+             from flask import Flask, jsonify
+         ModuleNotFoundError: No module named 'flask'
+
+====================================================================================================
+Report saved: ops/swarm/merge_supercheck_20251028T025833Z.txt

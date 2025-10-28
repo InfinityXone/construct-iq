@@ -1,0 +1,7 @@
+#!/home/infinity-x-one/construct-iq/.smoke/.venv-bc61f53535239e86260ef2da656c1aebff20d612/bin/python3
+import sys
+from rsa.cli import keygen
+if __name__ == '__main__':
+    if sys.argv[0].endswith('.exe'):
+        sys.argv[0] = sys.argv[0][:-4]
+    sys.exit(keygen())

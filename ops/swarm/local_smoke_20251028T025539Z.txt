@@ -1,0 +1,21 @@
+====================================================================================================
+CONSTRUCT-IQ :: LOCAL SMOKE RUN — 20251028T025539Z
+====================================================================================================
+[i] repo: /home/infinity-x-one/construct-iq
+[i] services to test: 2
+    - services/memory-gateway
+    - services/orchestrator
+
+[*] memory-gateway
+    -> PASS: http://127.0.0.1:60321 (health ok)
+
+[*] orchestrator
+    -> FAIL: http://127.0.0.1:51297 (no /health or / response)
+       tail logs:
+         Traceback (most recent call last):
+           File "/home/infinity-x-one/construct-iq/services/orchestrator/main.py", line 7, in <module>
+             from flask import Flask, jsonify
+         ModuleNotFoundError: No module named 'flask'
+
+====================================================================================================
+Report: ops/swarm/local_smoke_20251028T025539Z.txt
