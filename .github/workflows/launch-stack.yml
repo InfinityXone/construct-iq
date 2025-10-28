@@ -1,10 +1,7 @@
 name: Launch Infinity Stack
 
 on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-
+  workflow_dispatch: {}
 jobs:
   launch:
     runs-on: ubuntu-latest

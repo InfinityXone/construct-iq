@@ -1,0 +1,102 @@
+==========================================================================================
+CONSTRUCT-IQ ⟂ SWARM MERGE DIAGNOSTICS — 20251028T024655Z (branch: merge/swarm-20251028T023033Z)
+==========================================================================================
+[i] Repo root: /home/infinity-x-one/construct-iq
+[i] Remote: https://github.com/InfinityXone/construct-iq.git
+[i] Git status (short):
+  ?? _from_github/
+  ?? ciq_merge_diagnose_and_fix.sh
+  ?? finish_swarm_import.sh
+  ?? finish_swarm_import_v2.sh
+  ?? merge_swarm_resilient.sh
+  ?? ops/swarm/merge_diagnostics_20251028T024654Z.txt
+  ?? ops/swarm/merge_diagnostics_20251028T024655Z.txt
+  ?? push_retry.sh
+==========================================================================================
+DIRECTORY & NAMING CHECKS
+==========================================================================================
+[✓] services
+[✓] services/memory-gateway
+[✓] services/orchestrator
+[✓] services/agents
+[✓] apps/swarm-dashboard
+[✓] ops/swarm
+[✓] infra/swarm
+[✓] docs/swarm
+[✓] .github/workflows
+
+[i] Detected agents (services/agents/*):
+  - agents
+  - agents/codex-agent
+  - agents/creator-agent
+  - agents/dashboard
+  - agents/financial-agent
+  - agents/guardian
+  - agents/headless-api
+  - agents/infinity-agent
+  - agents/memory-gateway
+  - agents/orchestrator
+  - agents/strategist-agent
+  - agents/visionary-agent
+  - financial-agent
+  - langchain-runtime
+  - strategist-agent
+  - visionary-agent
+==========================================================================================
+HYGIENE CHECKS (staging, big files, temp files)
+==========================================================================================
+[✓] no swarm-staging/
+
+[i] Large files ≥ 25MB in repo (may bloat CI):
+  (none ≥25MB)
+==========================================================================================
+CONSTRUCT-IQ ⟂ SWARM MERGE DIAGNOSTICS — 20251028T024655Z (branch: merge/swarm-20251028T023033Z)
+==========================================================================================
+[i] Repo root: /home/infinity-x-one/construct-iq
+[i] Remote: https://github.com/InfinityXone/construct-iq.git
+[i] Git status (short):
+  ?? _from_github/
+  ?? ciq_merge_diagnose_and_fix.sh
+  ?? finish_swarm_import.sh
+  ?? finish_swarm_import_v2.sh
+  ?? merge_swarm_resilient.sh
+  ?? ops/swarm/merge_diagnostics_20251028T024654Z.txt
+  ?? ops/swarm/merge_diagnostics_20251028T024655Z.txt
+  ?? push_retry.sh
+==========================================================================================
+DIRECTORY & NAMING CHECKS
+==========================================================================================
+[✓] services
+[✓] services/memory-gateway
+[✓] services/orchestrator
+[✓] services/agents
+[✓] apps/swarm-dashboard
+[✓] ops/swarm
+[✓] infra/swarm
+[✓] docs/swarm
+[✓] .github/workflows
+
+[i] Detected agents (services/agents/*):
+  - agents
+  - agents/codex-agent
+  - agents/creator-agent
+  - agents/dashboard
+  - agents/financial-agent
+  - agents/guardian
+  - agents/headless-api
+  - agents/infinity-agent
+  - agents/memory-gateway
+  - agents/orchestrator
+  - agents/strategist-agent
+  - agents/visionary-agent
+  - financial-agent
+  - langchain-runtime
+  - strategist-agent
+  - visionary-agent
+==========================================================================================
+HYGIENE CHECKS (staging, big files, temp files)
+==========================================================================================
+[✓] no swarm-staging/
+
+[i] Large files ≥ 25MB in repo (may bloat CI):
+  (none ≥25MB)

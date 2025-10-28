@@ -1,0 +1,215 @@
+====================================================================================================
+CONSTRUCT-IQ ⟂ SWARM MERGE DIAGNOSTICS — 20251028T024944Z (branch: merge/swarm-20251028T023033Z)
+====================================================================================================
+[i] Repo root: /home/infinity-x-one/construct-iq
+[i] Remote: https://github.com/InfinityXone/construct-iq.git
+[i] Git status (short):
+  ?? _from_github/
+  ?? ciq_merge_diagnose_and_fix.sh
+  ?? ciq_merge_diagnose_and_fix_v2.sh
+  ?? finish_swarm_import.sh
+  ?? finish_swarm_import_v2.sh
+  ?? merge_swarm_resilient.sh
+  ?? ops/swarm/merge_diagnostics_20251028T024654Z.txt
+  ?? ops/swarm/merge_diagnostics_20251028T024655Z.txt
+  ?? ops/swarm/merge_diagnostics_20251028T024944Z.txt
+  ?? push_retry.sh
+====================================================================================================
+DIRECTORY & NAMING CHECKS
+====================================================================================================
+[✓] services
+[✓] services/memory-gateway
+[✓] services/orchestrator
+[✓] services/agents
+[✓] apps/swarm-dashboard
+[✓] ops/swarm
+[✓] infra/swarm
+[✓] docs/swarm
+[✓] .github/workflows
+
+[i] Detected agents (services/agents/*):
+  - agents
+  - agents/codex-agent
+  - agents/creator-agent
+  - agents/dashboard
+  - agents/financial-agent
+  - agents/guardian
+  - agents/headless-api
+  - agents/infinity-agent
+  - agents/memory-gateway
+  - agents/orchestrator
+  - agents/strategist-agent
+  - agents/visionary-agent
+  - financial-agent
+  - langchain-runtime
+  - strategist-agent
+  - visionary-agent
+====================================================================================================
+HYGIENE CHECKS (staging, big files, temp/log files)
+====================================================================================================
+[✓] no swarm-staging/
+
+[i] Large files ≥ 25MB in repo (may bloat CI):
+  (none ≥25MB)
+[! ] repo log present: services/memory-gateway/MEMORY_AUTONOMY_CYCLE_LOG.txt
+[! ] repo log present: services/memory-gateway/REPO_SYNC_LOG.txt
+[! ] repo log present: services/memory-gateway/SELF_HEAL_LOG.txt
+[! ] repo log present: services/memory-gateway/STATE_INTEGRITY_LOG.txt
+[! ] repo log present: services/memory-gateway/STATE_RECALL_LOG.txt
+[! ] repo log present: services/memory-gateway/STATE_SYNC_LOG.txt
+[! ] repo log present: services/memory-gateway/SYSTEM_SANITY_LOG.txt
+====================================================================================================
+SERVICE READINESS (Dockerfile + main.py + py-compile)
+====================================================================================================
+[~] services/memory-gateway : main.py found, Dockerfile missing
+    -> py_compile OK
+[~] services/orchestrator : main.py found, Dockerfile missing
+    -> py_compile OK
+[✓] services/agents/agents : main.py=no Dockerfile=no
+[~] services/agents/agents/codex-agent : main.py found, Dockerfile missing
+    -> py_compile OK
+[~] services/agents/agents/creator-agent : main.py found, Dockerfile missing
+    -> py_compile OK
+[~] services/agents/agents/dashboard : main.py found, Dockerfile missing
+    -> py_compile OK
+[~] services/agents/agents/financial-agent : main.py found, Dockerfile missing
+    -> py_compile OK
+[~] services/agents/agents/guardian : main.py found, Dockerfile missing
+    -> py_compile OK
+[~] services/agents/agents/headless-api : main.py found, Dockerfile missing
+    -> py_compile OK
+[~] services/agents/agents/infinity-agent : main.py found, Dockerfile missing
+    -> py_compile OK
+[~] services/agents/agents/memory-gateway : main.py found, Dockerfile missing
+    -> py_compile OK
+[~] services/agents/agents/orchestrator : main.py found, Dockerfile missing
+    -> py_compile OK
+[~] services/agents/agents/strategist-agent : main.py found, Dockerfile missing
+    -> py_compile OK
+[~] services/agents/agents/visionary-agent : main.py found, Dockerfile missing
+    -> py_compile OK
+[~] services/agents/financial-agent : main.py found, Dockerfile missing
+    -> py_compile OK
+[~] services/agents/langchain-runtime : main.py found, Dockerfile missing
+    -> py_compile OK
+[~] services/agents/strategist-agent : main.py found, Dockerfile missing
+    -> py_compile OK
+[~] services/agents/visionary-agent : main.py found, Dockerfile missing
+    -> py_compile OK
+====================================================================================================
+CI WORKFLOWS (.github/workflows)
+====================================================================================================
+[! ] workflow not namespaced: ci.yml
+[! ] workflow not namespaced: launch-stack.yml
+[✓] swarm-deploy.yml
+[! ] workflow not namespaced: uptime.yml
+====================================================================================================
+DOCUMENTATION CHECKS
+====================================================================================================
+[✓] services/memory-gateway : README.md present
+[✓] services/orchestrator : README.md present
+[✓] apps/swarm-dashboard : README.md present
+[~] ops/swarm : README.md missing
+[~] infra/swarm : README.md missing
+[~] docs/swarm : README.md missing
+====================================================================================================
+SMOKE TEST (STATIC INVENTORY)
+====================================================================================================
+[*] repo top-level:
+  total 244
+  drwxr-xr-x 1 infinity-x-one infinity-x-one   1512 Oct 27 22:49 .
+  drwxr-xr-x 1 infinity-x-one infinity-x-one 503094 Oct 27 22:49 ..
+  drwxr-xr-x 1 infinity-x-one infinity-x-one     42 Oct 25 23:08 ai
+  drwxr-xr-x 1 infinity-x-one infinity-x-one     72 Oct 26 22:12 api
+  drwxr-xr-x 1 infinity-x-one infinity-x-one     64 Oct 25 23:36 app
+  drwxr-xr-x 1 infinity-x-one infinity-x-one     36 Oct 27 22:31 apps
+  -rwxr-xr-x 1 infinity-x-one infinity-x-one  10075 Oct 27 22:46 ciq_merge_diagnose_and_fix.sh
+  -rwxr-xr-x 1 infinity-x-one infinity-x-one   9656 Oct 27 22:49 ciq_merge_diagnose_and_fix_v2.sh
+  -rwxr-xr-x 1 infinity-x-one infinity-x-one   4979 Oct 26 22:10 ciq_option_b.sh
+  -rwxr-xr-x 1 infinity-x-one infinity-x-one   8870 Oct 26 21:41 ciq_wizard.sh
+  -rwxr-xr-x 1 infinity-x-one infinity-x-one   4147 Oct 26 22:40 clean_chromebook.sh
+  drwxr-xr-x 1 infinity-x-one infinity-x-one     12 Oct 26 16:56 cloudrun
+  -rw-r--r-- 1 infinity-x-one infinity-x-one    257 Oct 25 23:54 cookies.txt
+  drwxr-xr-x 1 infinity-x-one infinity-x-one    206 Oct 26 16:06 docker
+  -rw-r--r-- 1 infinity-x-one infinity-x-one    244 Oct 26 19:03 Dockerfile
+  -rw-r--r-- 1 infinity-x-one infinity-x-one    300 Oct 26 18:42 Dockerfile.worker
+  drwxr-xr-x 1 infinity-x-one infinity-x-one   1420 Oct 27 22:31 docs
+  -rw-r--r-- 1 infinity-x-one infinity-x-one    373 Oct 26 03:20 .env
+  -rw-r--r-- 1 infinity-x-one infinity-x-one    310 Oct 26 03:16 .env.bak.1761463258
+  -rw-r--r-- 1 infinity-x-one infinity-x-one    159 Oct 25 23:08 .env.example
+  -rw-r--r-- 1 infinity-x-one infinity-x-one   1204 Oct 25 23:37 .env.local
+  -rwxr-xr-x 1 infinity-x-one infinity-x-one   4456 Oct 27 22:31 finish_swarm_import.sh
+  -rwxr-xr-x 1 infinity-x-one infinity-x-one   4809 Oct 27 22:33 finish_swarm_import_v2.sh
+  drwxr-xr-x 1 infinity-x-one infinity-x-one    994 Oct 27 18:59 _from_github
+  drwxr-xr-x 1 infinity-x-one infinity-x-one    136 Oct 27 22:49 .git
+  drwxr-xr-x 1 infinity-x-one infinity-x-one     46 Oct 25 23:08 .github
+  -rw-r--r-- 1 infinity-x-one infinity-x-one    270 Oct 26 01:11 .gitignore
+  drwxr-xr-x 1 infinity-x-one infinity-x-one     34 Oct 26 02:48 harvest
+  drwxr-xr-x 1 infinity-x-one infinity-x-one     54 Oct 27 22:31 infra
+  -rwxr-xr-x 1 infinity-x-one infinity-x-one    393 Oct 27 16:31 launch_button.sh
+  -rw-r--r-- 1 infinity-x-one infinity-x-one   1898 Oct 26 17:19 Makefile
+  -rw-r--r-- 1 infinity-x-one infinity-x-one   7399 Oct 26 17:03 Makefile.bak-1761512789
+  -rw-r--r-- 1 infinity-x-one infinity-x-one   7173 Oct 26 17:06 Makefile.bak-1761512894
+  -rw-r--r-- 1 infinity-x-one infinity-x-one   6594 Oct 26 17:08 Makefile.bak-1761512962
+  -rw-r--r-- 1 infinity-x-one infinity-x-one   7118 Oct 26 17:12 Makefile.broken-1761513548
+  -rwxr-xr-x 1 infinity-x-one infinity-x-one   6999 Oct 27 22:30 merge_swarm_resilient.sh
+  -rw-r--r-- 1 infinity-x-one infinity-x-one    534 Oct 26 00:18 middleware.ts
+  -rw-r--r-- 1 infinity-x-one infinity-x-one    348 Oct 27 22:33 MIGRATION_SWARM_MAP.md
+  -rwxr-xr-x 1 infinity-x-one infinity-x-one    571 Oct 27 17:13 move_docs_from_chromeos.sh
+  -rwxr-xr-x 1 infinity-x-one infinity-x-one    616 Oct 27 16:49 move_docs_from_gpt_folder.sh
+  -rwxr-xr-x 1 infinity-x-one infinity-x-one    521 Oct 27 16:35 move_docs_launch.sh
+  -rwxr-xr-x 1 infinity-x-one infinity-x-one    479 Oct 27 16:28 move_docs.sh
+  drwxr-xr-x 1 infinity-x-one infinity-x-one    218 Oct 25 22:54 .next
+  -rw-r--r-- 1 infinity-x-one infinity-x-one    114 Oct 25 22:48 next.config.mjs
+  -rw-r--r-- 1 infinity-x-one infinity-x-one    228 Oct 25 22:53 next-env.d.ts
+  drwxr-xr-x 1 infinity-x-one infinity-x-one    230 Oct 25 22:53 node_modules
+  drwxr-xr-x 1 infinity-x-one infinity-x-one     68 Oct 27 22:31 ops
+  -rw-r--r-- 1 infinity-x-one infinity-x-one    496 Oct 25 23:34 package.json
+  -rw-r--r-- 1 infinity-x-one infinity-x-one  37672 Oct 25 22:52 pnpm-lock.yaml
+  -rw-r--r-- 1 infinity-x-one infinity-x-one     68 Oct 25 22:48 postcss.config.js
+  drwxr-xr-x 1 infinity-x-one infinity-x-one     34 Oct 25 22:48 public
+  -rwxr-xr-x 1 infinity-x-one infinity-x-one   2727 Oct 27 22:42 push_retry.sh
+  -rw-r--r-- 1 infinity-x-one infinity-x-one    523 Oct 26 00:49 README.md
+  drwxr-xr-x 1 infinity-x-one infinity-x-one     82 Oct 27 22:31 services
+  -rw-r--r-- 1 infinity-x-one infinity-x-one    754 Oct 25 22:48 tailwind.config.ts
+  drwxr-xr-x 1 infinity-x-one infinity-x-one     10 Oct 27 22:31 templates
+  -rw-r--r-- 1 infinity-x-one infinity-x-one    722 Oct 25 22:53 tsconfig.json
+  drwxr-xr-x 1 infinity-x-one infinity-x-one     86 Oct 26 00:28 .vercel
+  drwxr-xr-x 1 infinity-x-one infinity-x-one     18 Oct 26 01:11 worker
+
+[*] services with entrypoints:
+  - services/agents : main.py=no Dockerfile=no
+  - services/agents/agents : main.py=no Dockerfile=no
+  - services/agents/financial-agent : main.py=yes Dockerfile=no
+  - services/agents/langchain-runtime : main.py=yes Dockerfile=no
+  - services/agents/strategist-agent : main.py=yes Dockerfile=no
+  - services/agents/visionary-agent : main.py=yes Dockerfile=no
+  - services/harvester : main.py=no Dockerfile=yes
+  - services/harvester/harvester : main.py=yes Dockerfile=no
+  - services/harvester/.venv : main.py=no Dockerfile=no
+  - services/memory-gateway : main.py=yes Dockerfile=no
+  - services/memory-gateway/__pycache__ : main.py=no Dockerfile=no
+  - services/orchestrator : main.py=yes Dockerfile=no
+  - services/orchestrator/__pycache__ : main.py=no Dockerfile=no
+
+[*] workflow files:
+  .github/workflows/ci.yml
+  .github/workflows/launch-stack.yml
+  .github/workflows/swarm-deploy.yml
+  .github/workflows/uptime.yml
+
+[*] Uncommitted changes after fixes:
+  ?? _from_github/
+  ?? ciq_merge_diagnose_and_fix.sh
+  ?? ciq_merge_diagnose_and_fix_v2.sh
+  ?? finish_swarm_import.sh
+  ?? finish_swarm_import_v2.sh
+  ?? merge_swarm_resilient.sh
+  ?? ops/swarm/merge_diagnostics_20251028T024654Z.txt
+  ?? ops/swarm/merge_diagnostics_20251028T024655Z.txt
+  ?? ops/swarm/merge_diagnostics_20251028T024944Z.txt
+  ?? push_retry.sh
+====================================================================================================
+RESULT
+====================================================================================================
+[✓] No pending changes.
