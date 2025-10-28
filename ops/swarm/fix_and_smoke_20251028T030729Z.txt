@@ -13,3 +13,18 @@ SERVICE PREP
     [✓] py-compile OK
 [*] orchestrator  (kind=flask)
     [✓] py-compile OK
+[✓] committed autofixes
+====================================================================================================
+LOCAL SMOKE TEST
+
+[*] memory-gateway
+    -> FAIL: http://127.0.0.1:41105 — last 50 log lines:
+
+[*] orchestrator
+    -> FAIL: http://127.0.0.1:44779 — last 50 log lines:
+         Traceback (most recent call last):
+           File "/home/infinity-x-one/construct-iq/services/orchestrator/main.py", line 7, in <module>
+             from flask import Flask, jsonify
+         ModuleNotFoundError: No module named 'flask'
+====================================================================================================
+Report: ops/swarm/fix_and_smoke_20251028T030729Z.txt

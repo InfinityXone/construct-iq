@@ -30,3 +30,7 @@ services/memory-gateway/*LOG.txt
 
 # memory-gateway runtime logs
 services/memory-gateway/*LOG.txt
+
+# local smoke env + runtime logs
+.smoke/
+services/*/*LOG.txt
