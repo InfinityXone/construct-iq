@@ -35,3 +35,4 @@ services/memory-gateway/*LOG.txt
 .smoke/
 services/*/*LOG.txt
 .smoke.pid
+_from_github/

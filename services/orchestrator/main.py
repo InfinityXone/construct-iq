@@ -95,3 +95,13 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
     print(f"🚀 Orchestrator service online — listening on port {port}")
     app.run(host="0.0.0.0", port=port)
+# --- merge finish-line: health stub (Flask) ---
+try:
+    app  # type: ignore
+except NameError:
+    from flask import Flask
+    app = Flask(__name__)
+
+@app.route("/healthz")
+def healthz():
+    return {"status": "ok"}, 200

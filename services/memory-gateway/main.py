@@ -136,3 +136,17 @@ async def memory_link(request: Request):
     url = payload.get("url")
     token = payload.get("auth_token")
     auto_syn_
+# --- merge finish-line: health stub (FastAPI) ---
+try:
+    from fastapi import FastAPI
+    app  # type: ignore  # use existing app if present
+except Exception:
+    try:
+        app
+    except NameError:
+        from fastapi import FastAPI
+        app = FastAPI()
+
+@app.get("/healthz")
+def healthz():
+    return {"status": "ok"}
