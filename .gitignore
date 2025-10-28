@@ -24,3 +24,6 @@ __pycache__/
 *.pyc
 .mypy_cache/
 .pytest_cache/
+
+# memory-gateway runtime logs
+services/memory-gateway/*LOG.txt
