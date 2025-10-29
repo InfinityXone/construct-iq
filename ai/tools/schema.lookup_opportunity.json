@@ -1,9 +1,0 @@
-{
-  "name": "lookup_opportunity",
-  "description": "Return canonical opportunity metadata by ID",
-  "parameters": {
-    "type": "object",
-    "properties": { "id": { "type": "string" } },
-    "required": ["id"]
-  }
-}
