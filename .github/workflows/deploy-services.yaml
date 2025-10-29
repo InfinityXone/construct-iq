@@ -1,13 +1,22 @@
-name: Deploy to Cloud Run
+name: Deploy money loops to Cloud Run
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - 'services/**'
+      - '.github/workflows/deploy-services.yaml'
 permissions:
   contents: read
   id-token: write
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [ revenue-autopilot, ecom-growth-studio ]
+    defaults:
+      run:
+        working-directory: services/${{ matrix.service }}
     steps:
       - uses: actions/checkout@v4
       - uses: google-github-actions/auth@v2
@@ -22,17 +31,15 @@ jobs:
           gcloud artifacts repositories create docker --repository-format=docker --location=${{ secrets.GCP_REGION }} --description="CIQ docker" || true
       - name: Build & Push
         run: |
-          IMAGE="${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/docker/${{ github.event.repository.name }}:$(git rev-parse --short HEAD)"
+          IMAGE="${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/docker/${{ matrix.service }}:$(git rev-parse --short HEAD)"
           gcloud builds submit --tag "$IMAGE" .
           echo "IMAGE=$IMAGE" >> $GITHUB_ENV
       - name: Deploy
-        env:
-          IMAGE: ${{ env.IMAGE }}
         run: |
-          gcloud run deploy "${{ github.event.repository.name }}" --image "$IMAGE" \
+          gcloud run deploy "${{ matrix.service }}" --image "$IMAGE" \
             --allow-unauthenticated --cpu=1 --memory=1Gi --min-instances=1 --max-instances=50 \
-            --set-env-vars SERVICE_NAME=${{ github.event.repository.name }}
+            --set-env-vars SERVICE_NAME=${{ matrix.service }}
       - name: Smoke
         run: |
-          URL=$(gcloud run services describe "${{ github.event.repository.name }}" --format='value(status.url)')
+          URL=$(gcloud run services describe "${{ matrix.service }}" --format='value(status.url)')
           curl -fsS "$URL/healthz"
